@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-rota-api
+  namespace: default
+spec:
+  mode: one
+  selector:
+    labelSelectors:
+      app: rota-api-csharp
+  stressors:
+    cpu:
+      workers: 2
+      load: 100
+  duration: "60s"

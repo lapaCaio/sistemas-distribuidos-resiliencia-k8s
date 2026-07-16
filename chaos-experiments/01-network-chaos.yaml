@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-api
+  namespace: default
+spec:
+  action: delay
+  mode: all
+  selector:
+    labelSelectors:
+      app: rota-api-csharp
+  delay:
+    latency: "2500ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: "300s" # Agora o ataque vai durar 5 minutos

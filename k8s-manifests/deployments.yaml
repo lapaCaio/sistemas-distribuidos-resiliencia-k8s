@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        env:
+        - name: POSTGRES_USER
+          value: "admin"
+        - name: POSTGRES_PASSWORD
+          value: "admin123"
+        - name: POSTGRES_DB
+          value: "logistica_db"
+        ports:
+        - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rota-service
+spec:
+  selector:
+    app: rota-api-csharp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rota-api-csharp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rota-api-csharp
+  template:
+    metadata:
+      labels:
+        app: rota-api-csharp
+    spec:
+      containers:
+      - name: rota-api
+        image: rota-api-csharp:latest
+        imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+        env:
+        - name: ConnectionStrings__DefaultConnection
+          value: "Host=postgres-service;Database=logistica_db;Username=admin;Password=admin123"
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: gateway-api-python
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-api-python
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gateway-api-python
+  template:
+    metadata:
+      labels:
+        app: gateway-api-python
+    spec:
+      containers:
+      - name: gateway-api
+        image: gateway-api-python:latest
+        imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+        env:
+        - name: ROTA_SERVICE_URL
+          value: "http://rota-service"
+        ports:
+        - containerPort: 8000
