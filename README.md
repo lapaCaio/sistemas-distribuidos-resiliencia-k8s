@@ -1,5 +1,6 @@
 # sistemas-distribuidos-resiliencia-k8s
-Implementação e validação de testes de resiliência e Engenharia de Caos em arquitetura de microsserviços com Kubernetes e Chaos Mesh. # Trabalho Prático – Sistemas Distribuídos - 2026/1
+Implementação e validação de testes de resiliência e Engenharia de Caos em arquitetura de microsserviços com Kubernetes e Chaos Mesh. 
+# Trabalho Prático – Sistemas Distribuídos - 2026/1
 Caio Pereira Lapa      - 2021200619
 Tiago Artém dos Santos - 2021201421
 
